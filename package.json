@@ -1,0 +1,74 @@
+﻿{
+  "name": "dsh-incident-studio",
+  "version": "0.1.0",
+  "description": "Put screen frames and log lines on one millisecond timeline inside DeepSeek Harness: record, mark the failing seconds, box the problem on the frame, then hand the agent a keyframe strip, an animated GIF and the aligned log slice in one click.",
+  "type": "module",
+  "main": "./index.js",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "src",
+    "tools",
+    "test",
+    "assets",
+    "README.md",
+    "README.zh.md",
+    "CHANGELOG.md",
+    "LICENSE",
+    "icon.svg"
+  ],
+  "engines": {
+    "dsh": ">=0.2.1-rc.1 <0.3.0",
+    "node": ">=22.19"
+  },
+  "dsh": {
+    "manifestVersion": 1,
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web"
+    }
+  },
+  "scripts": {
+    "build": "node tools/build-client.mjs",
+    "test": "node test/run.mjs",
+    "test:live": "node test/live-capture.mjs",
+    "check:live": "node tools/check-live.mjs --fetch"
+  },
+  "author": "Eclipse-NotFound",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Eclipse-NotFound/dsh-incident-studio.git"
+  },
+  "homepage": "https://github.com/Eclipse-NotFound/dsh-incident-studio#readme",
+  "bugs": {
+    "url": "https://github.com/Eclipse-NotFound/dsh-incident-studio/issues"
+  },
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "cordis-plugin",
+    "incident-report",
+    "screen-capture",
+    "log-alignment",
+    "debugging",
+    "annotated-frames"
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "gifenc": "1.0.3",
+    "jsdom": "30.1.3",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  }
+}
+

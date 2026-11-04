@@ -1,0 +1,10 @@
+# dsh-incident-studio — bundle patch（现场取证台）
+#
+# 一行 loader 条目：主机端在这个进程里注册 /dsh-incident-studio/api/* 路由，
+# 浏览器端由 dsh.client 声明下发右侧栏面板与 composer 入口。
+# 停用：把 disabled 改成 true，或在 profile 的 cordis.patch.yml 里
+#   - id: incident-studio
+#     disabled: true
+- insert:
+    - id: incident-studio
+      name: dsh-incident-studio

@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 440" width="960" height="440" role="img" aria-label="Incident Studio: screen frames and log lines on one clock">
+  <title>Incident Studio — screen frames and log lines on one clock</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#161821"/>
+      <stop offset="1" stop-color="#0d0f15"/>
+    </linearGradient>
+    <linearGradient id="range" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ff2d55" stop-opacity=".26"/>
+      <stop offset="1" stop-color="#ff2d55" stop-opacity=".10"/>
+    </linearGradient>
+  </defs>
+  <rect width="960" height="440" rx="16" fill="url(#bg)"/>
+
+  <!-- title -->
+  <text x="32" y="42" fill="#e8e8ef" font-family="ui-sans-serif,system-ui,'Segoe UI',sans-serif" font-size="19" font-weight="600">现场取证台 · Incident Studio</text>
+  <text x="32" y="64" fill="#8b8b99" font-family="ui-sans-serif,system-ui,'Segoe UI',sans-serif" font-size="13">屏幕画面与日志在同一条毫秒时间轴上 · one clock for screen frames and log lines</text>
+
+  <g transform="translate(806,24)">
+    <rect x="0" y="0" width="122" height="30" rx="15" fill="#1f6feb"/>
+    <text x="61" y="20" fill="#ffffff" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="13" font-weight="600">填进输入框 →</text>
+  </g>
+
+  <!-- selected range -->
+  <rect x="352" y="76" width="300" height="162" fill="url(#range)" stroke="#ff2d55" stroke-opacity=".5" stroke-dasharray="6 5" rx="6"/>
+  <text x="352" y="90" fill="#ff6b85" font-family="ui-monospace,Consolas,monospace" font-size="12">00:12.340 → 00:16.780</text>
+
+  <!-- frame strip -->
+  <text x="32" y="96" fill="#8b8b99" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11">frames（每帧带墙钟 / each frame carries wall-clock）</text>
+  <g>
+    <rect x="32" y="104" width="108" height="61" rx="4" fill="#2a2d3a"/>
+    <rect x="148" y="104" width="108" height="61" rx="4" fill="#2a2d3a"/>
+    <rect x="264" y="104" width="108" height="61" rx="4" fill="#38304c"/>
+    <rect x="380" y="104" width="108" height="61" rx="4" fill="#43334f"/>
+    <rect x="496" y="104" width="108" height="61" rx="4" fill="#4d3552"/>
+    <rect x="612" y="104" width="108" height="61" rx="4" fill="#553752"/>
+    <rect x="728" y="104" width="108" height="61" rx="4" fill="#2a2d3a"/>
+    <rect x="844" y="104" width="84" height="61" rx="4" fill="#2a2d3a"/>
+  </g>
+
+  <g stroke="#cfd0da" stroke-width="2" fill="none" stroke-linecap="round">
+    <circle cx="86" cy="128" r="7"/><path d="M86 135v14M86 142l-6 8M86 142l6 8M86 149l-4 10M86 149l4 10"/>
+    <circle cx="202" cy="128" r="7"/><path d="M202 135v14M202 142l-6 8M202 142l6 8M202 149l-4 10M202 149l4 10"/>
+    <circle cx="776" cy="128" r="7"/><path d="M776 135v14M776 142l-6 8M776 142l6 8M776 149l-4 10M776 149l4 10"/>
+  </g>
+  <g stroke="#ffffff" stroke-width="2.4" fill="none" stroke-linecap="round">
+    <circle cx="318" cy="134" r="7"/><path d="M318 141v14M318 148l-6 8M318 148l6 8M318 155l-4 10M318 155l4 10"/>
+    <circle cx="434" cy="126" r="8"/><path d="M434 134v15M434 141l-7 9M434 141l7 9M434 149l-5 11M434 149l5 11"/>
+    <circle cx="550" cy="120" r="8"/><path d="M550 128v15M550 135l-7 9M550 135l7 9M550 143l-5 11M550 143l5 11"/>
+    <circle cx="666" cy="114" r="8"/><path d="M666 122v15M666 129l-7 9M666 129l7 9M666 137l-5 11M666 137l5 11"/>
+  </g>
+  <g stroke="#ff2d55" stroke-width="2" fill="none" stroke-dasharray="4 4">
+    <rect x="404" y="98" width="268" height="56" rx="5"/>
+  </g>
+  <text x="404" y="182" fill="#ff6b85" font-family="ui-monospace,Consolas,monospace" font-size="11">annotation #1 · 悬空，脚下没有影子</text>
+
+  <g fill="#6f7080" font-family="ui-monospace,Consolas,monospace" font-size="10">
+    <text x="32" y="200">00:12.3</text><text x="148" y="200">00:12.6</text><text x="264" y="200">00:13.1</text>
+    <text x="380" y="200">00:14.0</text><text x="496" y="200">00:14.8</text><text x="612" y="200">00:15.6</text>
+    <text x="728" y="200">00:16.4</text><text x="844" y="200">00:17.0</text>
+  </g>
+
+  <!-- timeline -->
+  <text x="32" y="226" fill="#8b8b99" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11">timeline（同一套墙钟 / shared clock）</text>
+  <line x1="32" y1="234" x2="928" y2="234" stroke="#3a3d4d" stroke-width="2"/>
+  <line x1="32" y1="234" x2="352" y2="234" stroke="#6aa9ff" stroke-width="3"/>
+  <line x1="352" y1="234" x2="652" y2="234" stroke="#ff2d55" stroke-width="3"/>
+  <circle cx="430" cy="234" r="6" fill="#ff2d55"/>
+  <text x="430" y="254" fill="#ff6b85" font-family="ui-monospace,Consolas,monospace" font-size="11">⚑ 问题点</text>
+
+  <!-- log lines -->
+  <g font-family="ui-monospace,Consolas,monospace" font-size="11.5">
+    <text x="32" y="290" fill="#6f7080">[00:12.210] (host) RConnectGame: moveTest -&gt; 966,900</text>
+    <text x="32" y="312" fill="#6f7080">[00:13.150] (host) RConnectDbg: tick 400 mode=joining</text>
+    <text x="32" y="334" fill="#9aa0b5">[00:13.480] (join) RConnectNet: ghost snapshot x=966</text>
+    <text x="32" y="356" fill="#ff6b85">[00:14.250] (host) ReferenceError: chest state mismatch (sost:LEVITATING)</text>
+    <text x="32" y="378" fill="#f2c94c">[00:15.000] ⚑ 问题点</text>
+    <text x="32" y="400" fill="#9aa0b5">[00:16.340] (host) RConnectGame: interactObject timeout, retry 1</text>
+  </g>
+
+  <text x="32" y="426" fill="#5f6070" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11">日志行与画面帧同源对齐，Agent 不必再猜“你说的那一刻”是哪一行 · log lines and frames share one origin</text>
+</svg>
