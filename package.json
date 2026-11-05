@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "dsh-incident-studio",
   "version": "0.1.0",
   "description": "Put screen frames and log lines on one millisecond timeline inside DeepSeek Harness: record, mark the failing seconds, box the problem on the frame, then hand the agent a keyframe strip, an animated GIF and the aligned log slice in one click.",
@@ -71,4 +71,3 @@
     "react-dom": "18.3.1"
   }
 }
-
