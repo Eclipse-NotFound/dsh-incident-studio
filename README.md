@@ -195,7 +195,7 @@ Disable it by removing `dsh-incident-studio` from `dsh.profile.bundles`, or with
 ```sh
 npm ci                        # dev deps: type references plus jsdom / react-dom / gifenc for tests
 node tools/build-client.mjs   # concatenate src/client/*.js into client.js, with a syntax check
-node test/run.mjs             # 250 assertions: host routes, client pure functions, seat registration, jsdom click-through, GIF/strip, capture polling
+node test/run.mjs             # 293 assertions: host routes, manifest/release shape, client pure functions, seat registration, jsdom click-through, GIF/strip, capture polling
 node test/live-capture.mjs    # real GDI capture (grabs ~1.4 s of screen at 320px, deletes it immediately; keep it out of CI)
 node tools/check-live.mjs --fetch   # check a running DSH: routes, module graph, served bundle, capture capability, page receipts
 ```
@@ -208,6 +208,7 @@ src/client/00-head.js … 90-tail.js   browser half, concatenated into client.js
 tools/grab-frames.ps1                Windows GDI screen grabber
 tools/check-live.mjs                 live self-check (routes / module graph / served bundle / receipts)
 test/host.test.mjs                   real HTTP server exercising every route
+test/manifest.test.mjs              package manifest / release shape (no BOM, dsh.bundle, files whitelist)
 test/pure.test.mjs                   loads the shipped client.js and tests the pure helpers
 test/client-apply.test.mjs           runs apply() against a fake client context, then the hand-off chain
 test/capture.test.mjs                capture polling, stop, failure reporting, API error mapping

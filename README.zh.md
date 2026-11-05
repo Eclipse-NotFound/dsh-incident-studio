@@ -195,7 +195,7 @@ dsh plugin --profile <profile> add dsh-incident-studio
 ```sh
 npm ci                        # 开发依赖（类型参考 + 测试用的 jsdom / react-dom / gifenc）
 node tools/build-client.mjs   # 拼接 src/client/*.js → client.js，并做语法自检
-node test/run.mjs             # 250 项断言：主机全链路、客户端纯函数、apply 座位、jsdom 交互、GIF/条带、采集轮询
+node test/run.mjs             # 293 项断言：主机全链路、包清单形状、客户端纯函数、apply 座位、jsdom 交互、GIF/条带、采集轮询
 node test/live-capture.mjs    # 真机 GDI 抓帧（会短暂截屏 1.4 秒 / 320px，抓完立即删除；CI 里别跑）
 node tools/check-live.mjs --fetch   # 对着正在运行的 DSH 核对：路由、模块图、下发的 bundle、抓帧能力、页面回执
 ```
@@ -208,6 +208,7 @@ src/client/00-head.js … 90-tail.js   浏览器端源码（按序拼接成 clie
 tools/grab-frames.ps1           Windows GDI 抓屏助手
 tools/check-live.mjs            实机自检（路由 / 模块图 / 下发脚本 / 能力回执 / 页面回执）
 test/host.test.mjs              起真 HTTP 服务跑全部路由
+test/manifest.test.mjs          包清单与发布物件形状（无 BOM、dsh.bundle、files 白名单）
 test/pure.test.mjs              装载真正的 client.js 测纯函数
 test/client-apply.test.mjs      假客户端上下文里跑 apply()、注册座位、走递交链路
 test/capture.test.mjs           采集轮询、停止、失败上报、API 错误映射

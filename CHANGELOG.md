@@ -11,4 +11,11 @@ First public release.
 - **Range + annotation + export**: mark the failing seconds, drag boxes on the frame, write one sentence; export a 6-frame contact strip (PNG), an animated GIF (local `gifenc`), and `bundle.md` / `bundle.json` into the session workspace.
 - **One-click hand-off**: the compact markdown with the log slice goes into the composer, the strip/GIF become draft attachments; send from there or review first.
 - **Self-check receipts**: `client-boot.json` (page reached `apply` / `seat` / `panel`) and `capture-capability.json` (which capture path the host can use) under `$DSH_HOME/storages/dsh-incident-studio/`; `tools/check-live.mjs` reads them alongside the live module graph.
-- **Tests**: 250 assertions across six suites (host routes end-to-end, client pure functions, `apply()` seat registration, panel SSR, a jsdom click-through of the whole flow, GIF encoding and strip layout, capture polling) plus a real-machine GDI capture check.
+- **Tests**: 293 assertions across seven suites (host routes end-to-end, manifest/release shape, client pure functions, `apply()` seat registration, panel SSR, a jsdom click-through of the whole flow, GIF encoding and strip layout, capture polling) plus a real-machine GDI capture check.
+
+## 0.1.0 — fix (2026-11-05)
+
+- `package.json` had shipped with a UTF-8 BOM (left by a Windows PowerShell `Set-Content -Encoding utf8` step). A BOM is not legal JSON, so the plugin market rejected the manifest with `Unexpected token … is not valid JSON`. The manifest and the `v0.1.0` release tarball are BOM-free now, and `test/manifest.test.mjs` fails the suite if any published text file grows a BOM again.
+
+Also: the test runner now covers the manifest, and the dev docs list the new suite.
+
