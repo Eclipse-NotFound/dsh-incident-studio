@@ -101,8 +101,77 @@
 						h('span', { className: 'dshis-event-time' }, formatRel(event.relMs)),
 						h('span', { className: 'dshis-event-src' }, event.src),
 						h('span', { className: 'dshis-event-text' }, event.text),
+						event.anchor ? h('span', { className: 'dshis-muted' }, `⤷ ${describeAnchor(event.anchor)}`) : null,
 					);
 				}),
+			);
+		}
+
+		/**
+		 * 输入事件列表（复看态）：键/鼠标/前台切换，点一条跳到对应画面。
+		 * @param props.inputs 已按区间筛过的输入事件。
+		 * @param props.onSeek 点击某条时把播放头移过去。
+		 */
+		function InputList(props) {
+			const inputs = Array.isArray(props.inputs) ? props.inputs : [];
+			const onSeek = props.onSeek;
+			if (inputs.length === 0) return h('div', { className: 'dshis-empty' }, t('review.input.empty'));
+			// 只渲染尾部 300 条：一场游戏下来的按键数可能上千。
+			const start = Math.max(0, inputs.length - 300);
+			const visible = inputs.slice(start);
+			return h(
+				'div',
+				{ className: 'dshis-input-list' },
+				visible.map((event, index) =>
+					h(
+						'div',
+						{
+							key: Number.isFinite(event?.seq) ? `in-${event.seq}` : `in-${start + index}`,
+							className: 'dshis-event is-input',
+							onClick: () => onSeek?.(event.relMs),
+							title: t('review.input.seek'),
+						},
+						h('span', { className: 'dshis-event-time' }, formatRel(event.relMs)),
+						h('span', { className: 'dshis-event-src' }, inputSymbol(event.kind)),
+						h('span', { className: 'dshis-event-text' }, event.text ?? ''),
+					),
+				),
+				start > 0 ? h('div', { className: 'dshis-muted' }, `… 前面还有 ${start} 条`) : null,
+			);
+		}
+
+		/**
+		 * 录制态的输入读数：就绪与否、按住了哪些键、多少次键鼠。
+		 * @param props.input 录制快照里的 input 状态。
+		 */
+		function InputHud(props) {
+			const input = props.input;
+			if (input === null || input === undefined) return null;
+			if (input.error) {
+				return h(
+					'div',
+					{ className: 'dshis-input-hud' },
+					h('span', { className: 'dshis-badge', style: { color: '#d1242f' } }, t('rec.input.error', { msg: input.error })),
+				);
+			}
+			if (input.enabled === false) {
+				return h('div', { className: 'dshis-input-hud' }, h('span', { className: 'dshis-muted' }, t('rec.input.off')));
+			}
+			if (typeof input.reason === 'string' && input.reason !== '') {
+				return h('div', { className: 'dshis-input-hud' }, h('span', { className: 'dshis-muted' }, `${t('rec.input')}：${input.reason}`));
+			}
+			const ready = input.ready === true;
+			const counts = input.counts ?? {};
+			const held = [...(input.held ?? []), ...(input.heldButtons ?? [])];
+			return h(
+				'div',
+				{ className: 'dshis-input-hud' },
+				h('span', { className: 'dshis-badge' }, ready ? `⌨ ${t('rec.input.ready')}` : t('rec.input.arming')),
+				ready && held.length > 0 ? h('span', { className: 'dshis-muted' }, `${t('rec.input.held')}：`) : null,
+				ready ? held.map((name) => h('span', { key: name, className: 'dshis-key is-down' }, name)) : null,
+				ready ? h('span', { className: 'dshis-muted' }, t('rec.input.keys', { n: counts.keys ?? 0 })) : null,
+				ready ? h('span', { className: 'dshis-muted' }, t('rec.input.clicks', { n: counts.clicks ?? 0 })) : null,
+				ready && (counts.focus ?? 0) > 0 ? h('span', { className: 'dshis-muted' }, `▸ ${counts.focus}`) : null,
 			);
 		}
 

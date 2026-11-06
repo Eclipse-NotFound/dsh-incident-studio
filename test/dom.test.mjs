@@ -148,6 +148,7 @@ function createFakeHost() {
 					sources: [
 						{ id: 'log-a', kind: 'file', label: 'Host', color: '#6aa9ff', path: 'C:/logs/RConnect.log', enabled: true, preRoll: true },
 					],
+					input: { enabled: true, scope: 'target', targets: 'remains', pollMs: 20, trailHz: 0 },
 					updatedAt: '',
 				},
 			],
@@ -156,6 +157,7 @@ function createFakeHost() {
 		now: 1700000000000,
 		platform: 'win32',
 		capture: { native: true, nativeReason: '', fps: 6, width: 960, quality: 62 },
+		input: { mode: 'powershell', available: true, reason: '', error: '', keys: 108, probedAt: '2026-11-06T00:00:00.000Z', maxSeconds: 1800, defaults: { enabled: true, scope: 'target', targets: '', pollMs: 20, trailHz: 0 } },
 	};
 
 	globalThis.fetch = async (url, init) => {
@@ -197,6 +199,7 @@ function createFakeHost() {
 				dropped: 0,
 				sources: (body?.sources ?? []).map((source) => ({ ...source, status: { ok: true, started: true, lines: 0, size: 0, offset: 0, binaryDropped: 0, error: '' } })),
 				capture: null,
+				input: { enabled: true, running: true, armed: true, ready: true, error: '', scope: 'target', targets: ['remains'], pollMs: 20, trailHz: 0, counts: { keys: 1, clicks: 0, focus: 0, moves: 0, resets: 0 }, held: ['W'], heldButtons: [], events: 1, bytes: 90, lastEvent: null, reason: '', stopInfo: null, archivePath: '' },
 			};
 			return respond({ ok: true, value: { reused: false, recording } });
 		}
@@ -211,7 +214,15 @@ function createFakeHost() {
 			return respond({ ok: true, value: { events, cursor: events.length, dropped: 0, recording } });
 		}
 		if (text.endsWith('/api/marker')) {
-			return respond({ ok: true, value: { event: { seq: 2, src: 'marker', level: 'info', text: '【打点】问题点', wall: startedT0 + 1500, relMs: 1500, pre: false, marker: '问题点' }, cursor: 3 } });
+			return respond({ ok: true, value: { event: { seq: 2, src: 'marker', level: 'info', text: '【打点】问题点', wall: startedT0 + 1500, relMs: 1500, pre: false, marker: '问题点', anchor: { kind: 'key', name: 'Space', relMs: 1490, deltaMs: 10 } }, cursor: 3, anchor: { kind: 'key', name: 'Space', relMs: 1490, deltaMs: 10 } } });
+		}
+		if (text.includes('/api/input')) {
+			const events = [
+				{ seq: 0, kind: 'focus', inScope: true, pid: 99, proc: 'remains', wall: startedT0 + 200, relMs: 200, text: 'focus: remains' },
+				{ seq: 1, kind: 'key', name: 'Space', vk: 32, down: true, wall: startedT0 + 1490, relMs: 1490, text: 'Space ↓' },
+				{ seq: 2, kind: 'key', name: 'Space', vk: 32, down: false, wall: startedT0 + 1600, relMs: 1600, ms: 110, text: 'Space ↑ (0.11s)' },
+			];
+			return respond({ ok: true, value: { inputs: events, cursor: 3, dropped: 0, total: 3, input: recording?.input ?? state.input, t0: startedT0 } });
 		}
 		if (text.endsWith('/api/stop')) {
 			recording = recording === null ? null : { ...recording, recording: false, stoppedAt: '2026-11-04T12:00:05.000Z' };
@@ -230,6 +241,10 @@ function createFakeHost() {
 					markdown: '# 纪要',
 					eventCount: Array.isArray(body?.events) ? body.events.length : 0,
 					id: 'rec-1',
+					inputInfo: '按键 1 次按下、鼠标 0 次点击（区间内 3 条）',
+					inputSummary: { total: 3, keyDowns: 1 },
+					inputCount: 3,
+					inputArtifact: '',
 				},
 			});
 		}
@@ -365,6 +380,10 @@ export async function run() {
 		const image = container.querySelector('img');
 		ok(image.getAttribute('src').startsWith('blob:'), '画面用 object URL 渲染');
 		await waitFor('收到日志事件', () => (container.textContent ?? '').includes('ReferenceError'));
+		// 输入记录 HUD：就绪 + 当前按住的键
+		const hudText = container.textContent ?? '';
+		contains(hudText, '输入记录就绪', '录制态显示输入记录就绪');
+		contains(hudText, 'W', '录制态显示按住的键');
 		contains(container.textContent ?? '', '00:00.900', '日志行带相对时间');
 
 		// -------------------- 打点 --------------------
@@ -380,6 +399,17 @@ export async function run() {
 		await waitFor('进入复看态', () => (container.textContent ?? '').includes('问题描述'), 8000);
 		ok(host.calls.some((call) => call.url.endsWith('/api/capture/stop')), '停止时收掉抓帧');
 		ok(host.calls.some((call) => call.url.endsWith('/api/stop')), '停止时结束录制');
+
+		// -------------------- 输入记录（复看态） --------------------
+		await waitFor('输入事件加载完成', () => (container.textContent ?? '').includes('输入 · 3'));
+		ok(host.calls.some((call) => call.url.includes('/api/input')), '停止后拉取输入事件');
+		contains(container.textContent ?? '', '1 按键', '复看态显示按键次数');
+		contains(container.textContent ?? '', '前一条输入', '打点行显示前一条输入（锚点）');
+		const showInputsButton = findButton(container, '展开');
+		ok(showInputsButton !== undefined, '输入列表有展开按钮');
+		showInputsButton.dispatchEvent(new dom.window.MouseEvent('click', { bubbles: true }));
+		await waitFor('输入列表展开', () => (container.textContent ?? '').includes('Space ↓'));
+		contains(container.textContent ?? '', 'Space ↑ (0.11s)', '输入列表显示抬起与按住时长');
 
 		// -------------------- 填问题描述 --------------------
 		const textarea = container.querySelector('textarea');
@@ -399,6 +429,8 @@ export async function run() {
 		contains(deliveryLog.draftText, 'bundle.md', '正文指向完整纪要');
 		contains(deliveryLog.draftText, 'ReferenceError: chest state mismatch', '正文带上区间内的日志');
 		contains(deliveryLog.draftText, '00:00.900', '正文里的日志带相对时间');
+		contains(deliveryLog.draftText, '键鼠输入', '正文带上键鼠输入摘要');
+		contains(deliveryLog.draftText, '前一条输入：Space ↓ 0.01s 前', '正文里的打点带上输入锚点');
 		ok(deliveryLog.drafts.length >= 1, '附件登记到了 composer');
 		ok(deliveryLog.drafts[0].names.includes('frames.png'), '关键帧条带作为附件');
 		const bundleCall = host.calls.find((call) => call.url.endsWith('/api/bundle'));

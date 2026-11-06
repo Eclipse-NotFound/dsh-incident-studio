@@ -80,6 +80,14 @@ window.__ModuleLoader__.load({
 				'rec.elapsed': '已录',
 				'rec.events': '条事件',
 				'rec.frames': '帧',
+				'rec.input': '输入',
+				'rec.input.arming': '输入记录启动中…',
+				'rec.input.ready': '输入记录就绪',
+				'rec.input.off': '输入记录已关闭',
+				'rec.input.error': '输入记录出错：{msg}',
+				'rec.input.keys': '{n} 按键',
+				'rec.input.clicks': '{n} 点击',
+				'rec.input.held': '按住中',
 				'rec.waiting': '等待日志文件…',
 				'rec.source.ok': '跟随中',
 				'rec.noFrame': '还没有画面（检查采集源是否关闭）',
@@ -93,6 +101,12 @@ window.__ModuleLoader__.load({
 				'review.setTo': '设为终点',
 				'review.events': '事件',
 				'review.events.empty': '这个区间内没有事件。',
+				'review.input': '输入',
+				'review.input.show': '展开',
+				'review.input.hide': '收起',
+				'review.input.empty': '这个区间内没有键鼠输入。',
+				'review.input.anchor': '前一条输入：{name}{where} {delta}s 前',
+				'review.input.seek': '跳到这一条输入对应的画面',
 				'review.onlyProblems': '只看错误/警告',
 				'review.search': '搜索…',
 				'review.annotations': '画面标注',
@@ -116,6 +130,19 @@ window.__ModuleLoader__.load({
 				'settings.source.enabled': '启用',
 				'settings.source.color': '颜色',
 				'settings.source.preRoll': '录制前回看历史尾部',
+				'settings.input': '键鼠输入记录',
+				'settings.input.enable': '记录按键与鼠标',
+				'settings.input.process': '目标进程名，例如 Remains',
+				'settings.input.process.hint': '填游戏的可执行文件名（.exe 可省略），可逗号分隔多个。只有它在前台时才记录键鼠，切到别的窗口就暂停。',
+				'settings.input.scope': '记录范围',
+				'settings.input.scope.target': '仅目标程序在前台时',
+				'settings.input.scope.all': '除本插件外的所有前台窗口',
+				'settings.input.trail': '记录指针轨迹',
+				'settings.input.poll': '采样间隔',
+				'settings.input.privacy': '只记录「哪个键按下/抬起、鼠标点在哪」，不记录任何文字内容，也不安装键盘钩子。',
+				'settings.input.unavailable': '这台宿主用不了输入记录：{reason}',
+				'settings.input.noTarget': '未设目标进程（设置里填游戏进程名）',
+				'settings.input.ready': '输入助手可用（{keys} 个键位）',
 				'settings.ingest': '也可以让程序直接推事件',
 				'settings.ingest.hint': 'POST /dsh-incident-studio/api/ingest，带 header x-incident-token（值见下方）',
 				'settings.ingest.token': '令牌',
@@ -180,6 +207,14 @@ window.__ModuleLoader__.load({
 				'rec.elapsed': 'elapsed',
 				'rec.events': 'events',
 				'rec.frames': 'frames',
+				'rec.input': 'input',
+				'rec.input.arming': 'input recorder starting…',
+				'rec.input.ready': 'input recorder ready',
+				'rec.input.off': 'input recording is off',
+				'rec.input.error': 'input recorder error: {msg}',
+				'rec.input.keys': '{n} keys',
+				'rec.input.clicks': '{n} clicks',
+				'rec.input.held': 'held',
 				'rec.waiting': 'waiting for log file…',
 				'rec.source.ok': 'following',
 				'rec.noFrame': 'No frames yet (is the capture source still open?)',
@@ -193,6 +228,12 @@ window.__ModuleLoader__.load({
 				'review.setTo': 'Set end',
 				'review.events': 'Events',
 				'review.events.empty': 'No events in this range.',
+				'review.input': 'Input',
+				'review.input.show': 'Show',
+				'review.input.hide': 'Hide',
+				'review.input.empty': 'No keyboard or mouse input in this range.',
+				'review.input.anchor': 'last input: {name}{where} {delta}s before',
+				'review.input.seek': 'Jump to the frame for this input',
 				'review.onlyProblems': 'Only errors/warnings',
 				'review.search': 'Search…',
 				'review.annotations': 'Annotations',
@@ -216,6 +257,19 @@ window.__ModuleLoader__.load({
 				'settings.source.enabled': 'Enabled',
 				'settings.source.color': 'Color',
 				'settings.source.preRoll': 'Include the tail from before recording',
+				'settings.input': 'Keyboard/mouse input',
+				'settings.input.enable': 'Record keys and mouse',
+				'settings.input.process': 'Target process, e.g. Remains',
+				'settings.input.process.hint': 'The game executable (".exe" optional), comma separated. Keys are only recorded while it owns the foreground window.',
+				'settings.input.scope': 'Scope',
+				'settings.input.scope.target': 'Only while a target is in front',
+				'settings.input.scope.all': 'Any foreground window except this plugin',
+				'settings.input.trail': 'Record pointer path',
+				'settings.input.poll': 'Sample interval',
+				'settings.input.privacy': 'Only records which key went down/up and where the mouse clicked - no text, and no keyboard hooks.',
+				'settings.input.unavailable': 'Input recording is unavailable here: {reason}',
+				'settings.input.noTarget': 'no target process yet (set the game exe in Settings)',
+				'settings.input.ready': 'Input helper ready ({keys} keys)',
 				'settings.ingest': 'Programs can push events too',
 				'settings.ingest.hint': 'POST /dsh-incident-studio/api/ingest with header x-incident-token',
 				'settings.ingest.token': 'token',
@@ -316,6 +370,12 @@ window.__ModuleLoader__.load({
 .dshis-badge{font-size:10px;padding:0 5px;border-radius:6px;background:var(--dsw-alias-interactive-bg-hover,rgba(0,0,0,.06));color:var(--dsw-alias-label-secondary,#57606a);white-space:nowrap}
 .dshis-launcher{display:flex;align-items:center;gap:6px;font-size:11px}
 .dshis-launcher .dshis-btn{font-size:11px;padding:1px 8px}
+.dshis-input-hud{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:11px;min-height:18px}
+.dshis-key{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:10px;line-height:15px;padding:0 5px;border-radius:5px;border:1px solid var(--dsw-alias-line-lighter,rgba(0,0,0,.12));background:var(--dsw-alias-interactive-bg-hover,rgba(0,0,0,.05))}
+.dshis-key.is-down{background:rgba(31,111,235,.18);border-color:rgba(31,111,235,.45);color:#1f6feb}
+.dshis-event.is-input .dshis-event-text{color:var(--dsw-alias-label-secondary,#57606a)}
+.dshis-event.is-input .dshis-event-src{border:none;background:transparent;font-size:11px;padding:0;width:14px;text-align:center}
+.dshis-input-list{max-height:240px;overflow:auto;border:1px solid var(--dsw-alias-line-lighter,rgba(0,0,0,.1));border-radius:8px;padding:2px 4px}
 .dshis-src-row{display:grid;grid-template-columns:56px 1fr auto;gap:6px;align-items:center}
 .dshis-hidden{display:none}
 `;
@@ -388,6 +448,7 @@ window.__ModuleLoader__.load({
 			start: (payload) => api('/start', { method: 'POST', body: payload }),
 			stop: () => api('/stop', { method: 'POST', body: {} }),
 			events: (since) => api(`/events?since=${encodeURIComponent(String(since))}`),
+			input: (since) => api(`/input?since=${encodeURIComponent(String(since))}`),
 			marker: (label) => api('/marker', { method: 'POST', body: { label } }),
 			artifact: (name, data) => api('/artifact', { method: 'POST', body: { name, data } }),
 			bundle: (payload) => api('/bundle', { method: 'POST', body: payload }),
@@ -609,6 +670,81 @@ window.__ModuleLoader__.load({
 			return Array.from(new Set(result));
 		}
 
+		/* ------------------------- 输入记录（纯函数） ------------------------- */
+
+		/**
+		 * 输入事件按区间筛选（闭区间）。
+		 * @param inputs 输入事件。
+		 * @param fromRel 起点。
+		 * @param toRel 终点。
+		 * @returns 区间内的事件。
+		 */
+		function filterInputs(inputs, fromRel, toRel) {
+			const list = Array.isArray(inputs) ? inputs : [];
+			const from = Number.isFinite(fromRel) ? fromRel : -Infinity;
+			const to = Number.isFinite(toRel) ? toRel : Infinity;
+			return list.filter((event) => {
+				const rel = Number.isFinite(event?.relMs) ? event.relMs : 0;
+				return rel >= from && rel <= to;
+			});
+		}
+
+		/**
+		 * 输入事件计数（复看态头部与递交正文共用）。
+		 * @param inputs 输入事件。
+		 * @returns {{keys:number,clicks:number,focus:number,moves:number,resets:number,total:number}}
+		 */
+		function countInputs(inputs) {
+			const list = Array.isArray(inputs) ? inputs : [];
+			const counts = { keys: 0, clicks: 0, focus: 0, moves: 0, resets: 0, total: list.length };
+			for (const event of list) {
+				if (event === null || typeof event !== 'object') continue;
+				if (event.kind === 'key' && event.down === true) counts.keys += 1;
+				else if (event.kind === 'button' && event.down === true) counts.clicks += 1;
+				else if (event.kind === 'focus') counts.focus += 1;
+				else if (event.kind === 'move') counts.moves += 1;
+				else if (event.kind === 'reset') counts.resets += 1;
+			}
+			return counts;
+		}
+
+		/** 输入事件在列表里的符号（键/鼠标/前台/轨迹/失焦释放）。 */
+		function inputSymbol(kind) {
+			if (kind === 'key') return '⌨';
+			if (kind === 'button') return '🖱';
+			if (kind === 'focus') return '▸';
+			if (kind === 'move') return '·';
+			if (kind === 'reset') return '⤺';
+			return '•';
+		}
+
+		/**
+		 * 打点锚点的一句话（面板与递交正文共用）。
+		 * @param anchor 主机给的锚点。
+		 * @returns 空串（没有锚点）或「前一条输入：Space ↓ 0.12s 前」。
+		 */
+		function describeAnchor(anchor) {
+			if (anchor === null || typeof anchor !== 'object' || typeof anchor.name !== 'string') return '';
+			const delta = Number.isFinite(anchor.deltaMs) ? (anchor.deltaMs / 1000).toFixed(2) : '0.00';
+			const where = anchor.kind === 'button' && Number.isFinite(anchor.x) ? ` @${anchor.x},${anchor.y}` : '';
+			return t('review.input.anchor', { name: `${anchor.name} ↓`, where, delta });
+		}
+
+		/**
+		 * 输入摘要的一句话：「3 按键 · 1 点击」。
+		 * @param inputs 输入事件。
+		 * @returns 摘要文本。
+		 */
+		function inputSummaryText(inputs) {
+			const counts = countInputs(inputs);
+			const parts = [
+				t('rec.input.keys', { n: counts.keys }),
+				t('rec.input.clicks', { n: counts.clicks }),
+			];
+			if (counts.focus > 0) parts.push(`${counts.focus} ▸`);
+			return parts.join(' · ');
+		}
+
 		/**
 		 * 长日志的抽样：错误、打点、区间两个端点优先，其余等距补足。
 		 * @param events 已按区间筛过的事件。
@@ -656,6 +792,7 @@ window.__ModuleLoader__.load({
 				artifacts = [],
 				frameCount = 0,
 				lineLimit = 80,
+				inputInfo = '',
 			} = input ?? {};
 			const lines = [];
 			lines.push(`## 现场取证：${title !== '' ? title : '未命名'}`, '');
@@ -683,6 +820,11 @@ window.__ModuleLoader__.load({
 				lines.push('');
 			}
 
+			if (inputInfo !== '') {
+				lines.push(`**键鼠输入**：${inputInfo}`);
+				lines.push('');
+			}
+
 			if (events.length > 0) {
 				const sampled = sampleEventsForPrompt(events, lineLimit);
 				lines.push(`**日志切片**（区间内 ${events.length} 行，这里保留 ${sampled.length} 行：错误/打点优先）：`, '');
@@ -691,7 +833,8 @@ window.__ModuleLoader__.load({
 					const time = formatRel(event.relMs);
 					if (typeof event.marker === 'string' && event.marker !== '') {
 						// 打点行只写一次标签：text 本身就是「【打点】…」，再套前缀只是噪音
-						lines.push(`[${time}] ⚑ ${event.marker}${event.pre ? '（录制前）' : ''}`);
+						const anchor = describeAnchor(event.anchor);
+						lines.push(`[${time}] ⚑ ${event.marker}${anchor === '' ? '' : `（${anchor}）`}${event.pre ? '（录制前）' : ''}`);
 						continue;
 					}
 					lines.push(`[${time}] (${event.src})${event.pre ? ' (录制前)' : ''} ${event.text}`);
@@ -1320,8 +1463,77 @@ return { GIFEncoder: ct, applyPalette: nt, prequantize: et, quantize: H };
 						h('span', { className: 'dshis-event-time' }, formatRel(event.relMs)),
 						h('span', { className: 'dshis-event-src' }, event.src),
 						h('span', { className: 'dshis-event-text' }, event.text),
+						event.anchor ? h('span', { className: 'dshis-muted' }, `⤷ ${describeAnchor(event.anchor)}`) : null,
 					);
 				}),
+			);
+		}
+
+		/**
+		 * 输入事件列表（复看态）：键/鼠标/前台切换，点一条跳到对应画面。
+		 * @param props.inputs 已按区间筛过的输入事件。
+		 * @param props.onSeek 点击某条时把播放头移过去。
+		 */
+		function InputList(props) {
+			const inputs = Array.isArray(props.inputs) ? props.inputs : [];
+			const onSeek = props.onSeek;
+			if (inputs.length === 0) return h('div', { className: 'dshis-empty' }, t('review.input.empty'));
+			// 只渲染尾部 300 条：一场游戏下来的按键数可能上千。
+			const start = Math.max(0, inputs.length - 300);
+			const visible = inputs.slice(start);
+			return h(
+				'div',
+				{ className: 'dshis-input-list' },
+				visible.map((event, index) =>
+					h(
+						'div',
+						{
+							key: Number.isFinite(event?.seq) ? `in-${event.seq}` : `in-${start + index}`,
+							className: 'dshis-event is-input',
+							onClick: () => onSeek?.(event.relMs),
+							title: t('review.input.seek'),
+						},
+						h('span', { className: 'dshis-event-time' }, formatRel(event.relMs)),
+						h('span', { className: 'dshis-event-src' }, inputSymbol(event.kind)),
+						h('span', { className: 'dshis-event-text' }, event.text ?? ''),
+					),
+				),
+				start > 0 ? h('div', { className: 'dshis-muted' }, `… 前面还有 ${start} 条`) : null,
+			);
+		}
+
+		/**
+		 * 录制态的输入读数：就绪与否、按住了哪些键、多少次键鼠。
+		 * @param props.input 录制快照里的 input 状态。
+		 */
+		function InputHud(props) {
+			const input = props.input;
+			if (input === null || input === undefined) return null;
+			if (input.error) {
+				return h(
+					'div',
+					{ className: 'dshis-input-hud' },
+					h('span', { className: 'dshis-badge', style: { color: '#d1242f' } }, t('rec.input.error', { msg: input.error })),
+				);
+			}
+			if (input.enabled === false) {
+				return h('div', { className: 'dshis-input-hud' }, h('span', { className: 'dshis-muted' }, t('rec.input.off')));
+			}
+			if (typeof input.reason === 'string' && input.reason !== '') {
+				return h('div', { className: 'dshis-input-hud' }, h('span', { className: 'dshis-muted' }, `${t('rec.input')}：${input.reason}`));
+			}
+			const ready = input.ready === true;
+			const counts = input.counts ?? {};
+			const held = [...(input.held ?? []), ...(input.heldButtons ?? [])];
+			return h(
+				'div',
+				{ className: 'dshis-input-hud' },
+				h('span', { className: 'dshis-badge' }, ready ? `⌨ ${t('rec.input.ready')}` : t('rec.input.arming')),
+				ready && held.length > 0 ? h('span', { className: 'dshis-muted' }, `${t('rec.input.held')}：`) : null,
+				ready ? held.map((name) => h('span', { key: name, className: 'dshis-key is-down' }, name)) : null,
+				ready ? h('span', { className: 'dshis-muted' }, t('rec.input.keys', { n: counts.keys ?? 0 })) : null,
+				ready ? h('span', { className: 'dshis-muted' }, t('rec.input.clicks', { n: counts.clicks ?? 0 })) : null,
+				ready && (counts.focus ?? 0) > 0 ? h('span', { className: 'dshis-muted' }, `▸ ${counts.focus}`) : null,
 			);
 		}
 
@@ -1487,14 +1699,26 @@ return { GIFEncoder: ct, applyPalette: nt, prequantize: et, quantize: H };
 		 * 设置面板：管理 profile 与其中的日志源。
 		 */
 		function SettingsPanel(props) {
-			const { doc, setDoc, onSave, saving, ingestToken, onProbe, probeState } = props;
+			const { doc, setDoc, onSave, saving, ingestToken, onProbe, probeState, inputCapability } = props;
 			const profiles = Array.isArray(doc?.profiles) ? doc.profiles : [];
 			const activeIndex = Math.max(0, profiles.findIndex((profile) => profile.id === doc?.activeId));
 			const active = profiles[activeIndex];
+			// 采样间隔下拉：只给两个实测有意义的档，配置里写了别的值也要能显示出来
+			const pollChoices = [[10, '10ms（约 60 Hz）'], [20, '20ms（约 30 Hz）']];
+			const currentPoll = Number(active?.input?.pollMs ?? 20);
+			if (!pollChoices.some(([ms]) => ms === currentPoll)) pollChoices.push([currentPoll, `${currentPoll}ms`]);
 
 			const patchProfile = (index, patch) => {
 				const next = cloneDocument(doc);
 				next.profiles[index] = { ...next.profiles[index], ...patch };
+				setDoc(next);
+			};
+
+			/** 改当前 profile 的输入记录设置（缺字段时补一个空对象）。 */
+			const patchInput = (index, patch) => {
+				const next = cloneDocument(doc);
+				const target = next.profiles[index];
+				target.input = { ...(target.input ?? {}), ...patch };
 				setDoc(next);
 			};
 
@@ -1639,6 +1863,82 @@ return { GIFEncoder: ct, applyPalette: nt, prequantize: et, quantize: H };
 							),
 						),
 						h(Btn, { small: true, onClick: () => addSource(activeIndex) }, t('btn.add.source')),
+						h('div', { className: 'dshis-muted' }, t('settings.input')),
+						active.input === undefined || active.input === null
+							? null
+							: h(
+								'div',
+								{ className: 'dshis-card' },
+								h(
+									'label',
+									{ className: 'dshis-muted dshis-row', style: { gap: '4px' } },
+									h('input', {
+										type: 'checkbox',
+										checked: active.input.enabled !== false,
+										onChange: (event) => patchInput(activeIndex, { enabled: event.target.checked }),
+									}),
+									t('settings.input.enable'),
+								),
+								h('input', {
+									className: 'dshis-input',
+									value: active.input.targets ?? '',
+									placeholder: t('settings.input.process'),
+									onChange: (event) => patchInput(activeIndex, { targets: event.target.value }),
+								}),
+								h('div', { className: 'dshis-muted' }, t('settings.input.process.hint')),
+								h(
+									'div',
+									{ className: 'dshis-row' },
+									h('span', { className: 'dshis-muted' }, t('settings.input.scope')),
+									h(
+										'select',
+										{
+											className: 'dshis-select dshis-grow',
+											value: active.input.scope === 'all' ? 'all' : 'target',
+											onChange: (event) => patchInput(activeIndex, { scope: event.target.value }),
+										},
+										h('option', { value: 'target' }, t('settings.input.scope.target')),
+										h('option', { value: 'all' }, t('settings.input.scope.all')),
+									),
+								),
+								h(
+									'div',
+									{ className: 'dshis-row dshis-wrap' },
+									h(
+										'label',
+										{ className: 'dshis-muted dshis-row', style: { gap: '4px' } },
+										h('input', {
+											type: 'checkbox',
+											checked: Number(active.input.trailHz) > 0,
+											onChange: (event) => patchInput(activeIndex, { trailHz: event.target.checked ? 8 : 0 }),
+										}),
+										t('settings.input.trail'),
+									),
+									h('span', { className: 'dshis-muted' }, t('settings.input.poll')),
+									h(
+										'select',
+										{
+											className: 'dshis-select',
+											style: { width: '86px' },
+											value: String(active.input.pollMs ?? 20),
+											onChange: (event) => patchInput(activeIndex, { pollMs: Number(event.target.value) }),
+										},
+										pollChoices.map(([ms, label]) =>
+											h('option', { key: ms, value: String(ms) }, label),
+										),
+									),
+								),
+								h('div', { className: 'dshis-muted' }, t('settings.input.privacy')),
+								inputCapability === null || inputCapability === undefined
+									? null
+									: inputCapability.available === true
+										? h('div', { className: 'dshis-muted' }, `✓ ${t('settings.input.ready', { keys: inputCapability.keys ?? 0 })}`)
+										: h(
+											'div',
+											{ className: 'dshis-muted', style: { color: '#9a6700' } },
+											t('settings.input.unavailable', { reason: inputCapability.reason || '—' }),
+										),
+							),
 					),
 				h('div', { className: 'dshis-sep' }),
 				h('div', { className: 'dshis-muted' }, t('settings.ingest')),
@@ -1686,7 +1986,9 @@ return { GIFEncoder: ct, applyPalette: nt, prequantize: et, quantize: H };
 			const [startedAt, setStartedAt] = useState(0);
 			const [elapsed, setElapsed] = useState(0);
 			const [events, setEvents] = useState([]);
+			const [inputs, setInputs] = useState([]);
 			const [frames, setFrames] = useState([]);
+			const [showInputs, setShowInputs] = useState(false);
 			const [captureStatus, setCaptureStatus] = useState(null);
 			const [sourceChoices, setSourceChoices] = useState(null);
 			const [chosenSourceId, setChosenSourceId] = useState('');
@@ -1846,6 +2148,7 @@ return { GIFEncoder: ct, applyPalette: nt, prequantize: et, quantize: H };
 						profileId: activeProfile?.id ?? '',
 						sources,
 						sessionId: sessionIdRef.current ?? '',
+						input: activeProfile?.input ?? {},
 					});
 					if (!started.ok) {
 						setNotice({ level: 'err', text: started.message ?? t('err.generic') });
@@ -1855,6 +2158,8 @@ return { GIFEncoder: ct, applyPalette: nt, prequantize: et, quantize: H };
 					setStartedAt(Number(started.value.recording?.t0) || now);
 					setElapsed(0);
 					setEvents([]);
+					setInputs([]);
+					setShowInputs(false);
 					cursorRef.current = 0;
 					clearFrames();
 					setCaptureStatus(null);
@@ -1920,6 +2225,12 @@ return { GIFEncoder: ct, applyPalette: nt, prequantize: et, quantize: H };
 					}
 					const stopped = await API.stop();
 					if (stopped.ok) setRec(stopped.value.recording);
+					// 输入记录在停止时已经收尾归档，这里一次性取回，用于复看与递交摘要。
+					const inputResult = await API.input(0);
+					if (inputResult.ok) {
+						setInputs(Array.isArray(inputResult.value?.inputs) ? inputResult.value.inputs : []);
+						if (!stopped.ok) setRec((previous) => (previous === null ? previous : { ...previous, input: inputResult.value?.input ?? previous.input }));
+					}
 
 					const allFrames = framesRef.current.slice();
 					const allEvents = events;
@@ -1957,7 +2268,13 @@ return { GIFEncoder: ct, applyPalette: nt, prequantize: et, quantize: H };
 				if (result.ok && result.value?.event) {
 					setEvents((previous) => previous.concat([result.value.event]));
 					cursorRef.current = Math.max(cursorRef.current, result.value.cursor ?? cursorRef.current);
-					setNotice({ level: 'ok', text: `已打点：${formatRel(result.value.event.relMs)}` });
+					const anchor = describeAnchor(result.value.anchor ?? result.value.event.anchor);
+					setNotice({
+						level: 'ok',
+						text: anchor === ''
+							? `已打点：${formatRel(result.value.event.relMs)}`
+							: `已打点：${formatRel(result.value.event.relMs)}（${anchor}）`,
+					});
 				}
 			}
 
@@ -2057,8 +2374,7 @@ return { GIFEncoder: ct, applyPalette: nt, prequantize: et, quantize: H };
 							: (captureStatus?.mode === 'gdi'
 								? `GDI 抓屏 ${captureStatus?.fps ?? ''}fps`
 								: `桌面抓帧 ${captureStatus?.fps ?? ''}fps`),
-					});
-					if (!result.ok) {
+					});					if (!result.ok) {
 						setNotice({ level: 'err', text: result.message ?? t('err.generic') });
 						return;
 					}
@@ -2074,6 +2390,7 @@ return { GIFEncoder: ct, applyPalette: nt, prequantize: et, quantize: H };
 						annotations,
 						artifacts: current,
 						frameCount: inRange.length,
+						inputInfo: typeof result.value.inputInfo === 'string' ? result.value.inputInfo : '',
 					});
 					const files = [];
 					if (stripBlob !== undefined && stripBlob !== null) files.push(new File([stripBlob], 'frames.png', { type: 'image/png' }));
@@ -2129,6 +2446,7 @@ return { GIFEncoder: ct, applyPalette: nt, prequantize: et, quantize: H };
 				[events, fromRel, toRel, onlyProblems, query],
 			);
 			const inRangeFrames = useMemo(() => framesInRange(frames, fromRel, toRel, t0), [frames, fromRel, toRel, t0]);
+			const inRangeInputs = useMemo(() => filterInputs(inputs, fromRel, toRel), [inputs, fromRel, toRel]);
 			const recordingFrames = frames;
 			const previewIndex = nearestFrameIndex(inRangeFrames, playhead, t0);
 			const previewFrame = previewIndex >= 0 ? inRangeFrames[previewIndex] : (inRangeFrames[inRangeFrames.length - 1] ?? null);
@@ -2164,6 +2482,7 @@ return { GIFEncoder: ct, applyPalette: nt, prequantize: et, quantize: H };
 						ingestToken: boot?.state?.ingestToken,
 						onProbe: probe,
 						probeState,
+						inputCapability: boot?.state?.input ?? null,
 					}),
 				)
 				: null;
@@ -2218,6 +2537,28 @@ return { GIFEncoder: ct, applyPalette: nt, prequantize: et, quantize: H };
 								? h('span', { className: 'dshis-muted' }, t('idle.noSource'))
 								: null,
 						),
+					),
+					h(
+						'div',
+						{ className: 'dshis-row dshis-wrap' },
+						h('span', { className: 'dshis-muted' }, t('rec.input')),
+						typeof boot?.state?.input?.probedAt !== 'string' || boot.state.input.probedAt === ''
+							? h('span', { className: 'dshis-muted' }, t('rec.input.arming'))
+							: boot?.state?.input?.available !== true
+								? h(
+									'span',
+									{ className: 'dshis-badge' },
+									t('settings.input.unavailable', { reason: boot?.state?.input?.reason || '—' }),
+								)
+								: activeProfile?.input?.enabled === false
+									? h('span', { className: 'dshis-badge' }, t('rec.input.off'))
+									: (activeProfile?.input?.targets ?? '') === ''
+										? h('span', { className: 'dshis-badge', style: { color: '#9a6700' } }, t('settings.input.noTarget'))
+										: h(
+											'span',
+											{ className: 'dshis-badge' },
+											`${activeProfile.input.targets}${activeProfile.input.scope === 'all' ? ' · all' : ''}`,
+										),
 					),
 					h(
 						'div',
@@ -2312,6 +2653,7 @@ return { GIFEncoder: ct, applyPalette: nt, prequantize: et, quantize: H };
 						captureStatus?.mode === 'gdi' ? h('span', { className: 'dshis-badge' }, 'GDI') : null,
 						h('span', null, captureStatus?.error ? `! ${captureStatus.error}` : `${captureStatus?.captured ?? 0} ${t('rec.frames')}`),
 					),
+					h(InputHud, { input: rec?.input }),
 					h(
 						'div',
 						{ className: 'dshis-wrap' },
@@ -2469,6 +2811,24 @@ return { GIFEncoder: ct, applyPalette: nt, prequantize: et, quantize: H };
 						}),
 					),
 					h(EventList, { events: filteredEvents, activeRel: playhead, onSeek: (rel) => { setPlayhead(rel); setPlaying(false); } }),
+					h(
+						'div',
+						{ className: 'dshis-col' },
+						h(
+							'div',
+							{ className: 'dshis-row dshis-wrap' },
+							h('span', { className: 'dshis-muted' }, `${t('review.input')} · ${inRangeInputs.length}`),
+							inRangeInputs.length > 0 ? h('span', { className: 'dshis-badge' }, inputSummaryText(inRangeInputs)) : null,
+							h('span', { className: 'dshis-grow' }),
+							showInputs
+								? h(Btn, { small: true, onClick: () => setShowInputs(false) }, t('review.input.hide'))
+								: h(Btn, { small: true, onClick: () => setShowInputs(true) }, t('review.input.show')),
+						),
+						rec?.input?.reason ? h('div', { className: 'dshis-muted' }, `${t('rec.input')}：${rec.input.reason}`) : null,
+						showInputs
+							? h(InputList, { inputs: inRangeInputs, onSeek: (rel) => { setPlayhead(rel); setPlaying(false); } })
+							: null,
+					),
 					h('div', { className: 'dshis-sep' }),
 					h(
 						'div',

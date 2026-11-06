@@ -120,6 +120,81 @@
 			return Array.from(new Set(result));
 		}
 
+		/* ------------------------- 输入记录（纯函数） ------------------------- */
+
+		/**
+		 * 输入事件按区间筛选（闭区间）。
+		 * @param inputs 输入事件。
+		 * @param fromRel 起点。
+		 * @param toRel 终点。
+		 * @returns 区间内的事件。
+		 */
+		function filterInputs(inputs, fromRel, toRel) {
+			const list = Array.isArray(inputs) ? inputs : [];
+			const from = Number.isFinite(fromRel) ? fromRel : -Infinity;
+			const to = Number.isFinite(toRel) ? toRel : Infinity;
+			return list.filter((event) => {
+				const rel = Number.isFinite(event?.relMs) ? event.relMs : 0;
+				return rel >= from && rel <= to;
+			});
+		}
+
+		/**
+		 * 输入事件计数（复看态头部与递交正文共用）。
+		 * @param inputs 输入事件。
+		 * @returns {{keys:number,clicks:number,focus:number,moves:number,resets:number,total:number}}
+		 */
+		function countInputs(inputs) {
+			const list = Array.isArray(inputs) ? inputs : [];
+			const counts = { keys: 0, clicks: 0, focus: 0, moves: 0, resets: 0, total: list.length };
+			for (const event of list) {
+				if (event === null || typeof event !== 'object') continue;
+				if (event.kind === 'key' && event.down === true) counts.keys += 1;
+				else if (event.kind === 'button' && event.down === true) counts.clicks += 1;
+				else if (event.kind === 'focus') counts.focus += 1;
+				else if (event.kind === 'move') counts.moves += 1;
+				else if (event.kind === 'reset') counts.resets += 1;
+			}
+			return counts;
+		}
+
+		/** 输入事件在列表里的符号（键/鼠标/前台/轨迹/失焦释放）。 */
+		function inputSymbol(kind) {
+			if (kind === 'key') return '⌨';
+			if (kind === 'button') return '🖱';
+			if (kind === 'focus') return '▸';
+			if (kind === 'move') return '·';
+			if (kind === 'reset') return '⤺';
+			return '•';
+		}
+
+		/**
+		 * 打点锚点的一句话（面板与递交正文共用）。
+		 * @param anchor 主机给的锚点。
+		 * @returns 空串（没有锚点）或「前一条输入：Space ↓ 0.12s 前」。
+		 */
+		function describeAnchor(anchor) {
+			if (anchor === null || typeof anchor !== 'object' || typeof anchor.name !== 'string') return '';
+			const delta = Number.isFinite(anchor.deltaMs) ? (anchor.deltaMs / 1000).toFixed(2) : '0.00';
+			const where = anchor.kind === 'button' && Number.isFinite(anchor.x) ? ` @${anchor.x},${anchor.y}` : '';
+			return t('review.input.anchor', { name: `${anchor.name} ↓`, where, delta });
+		}
+
+		/**
+		 * 输入摘要的一句话：「3 按键 · 1 点击」。
+		 * @param inputs 输入事件。
+		 * @returns 摘要文本。
+		 */
+		function inputSummaryText(inputs) {
+			const counts = countInputs(inputs);
+			const parts = [
+				t('rec.input.keys', { n: counts.keys }),
+				t('rec.input.clicks', { n: counts.clicks }),
+			];
+			if (counts.focus > 0) parts.push(`${counts.focus} ▸`);
+			return parts.join(' · ');
+		}
+
 		/**
 		 * 长日志的抽样：错误、打点、区间两个端点优先，其余等距补足。
 		 * @param events 已按区间筛过的事件。
@@ -167,6 +242,7 @@
 				artifacts = [],
 				frameCount = 0,
 				lineLimit = 80,
+				inputInfo = '',
 			} = input ?? {};
 			const lines = [];
 			lines.push(`## 现场取证：${title !== '' ? title : '未命名'}`, '');
@@ -194,6 +270,11 @@
 				lines.push('');
 			}
 
+			if (inputInfo !== '') {
+				lines.push(`**键鼠输入**：${inputInfo}`);
+				lines.push('');
+			}
+
 			if (events.length > 0) {
 				const sampled = sampleEventsForPrompt(events, lineLimit);
 				lines.push(`**日志切片**（区间内 ${events.length} 行，这里保留 ${sampled.length} 行：错误/打点优先）：`, '');
@@ -202,7 +283,8 @@
 					const time = formatRel(event.relMs);
 					if (typeof event.marker === 'string' && event.marker !== '') {
 						// 打点行只写一次标签：text 本身就是「【打点】…」，再套前缀只是噪音
-						lines.push(`[${time}] ⚑ ${event.marker}${event.pre ? '（录制前）' : ''}`);
+						const anchor = describeAnchor(event.anchor);
+						lines.push(`[${time}] ⚑ ${event.marker}${anchor === '' ? '' : `（${anchor}）`}${event.pre ? '（录制前）' : ''}`);
 						continue;
 					}
 					lines.push(`[${time}] (${event.src})${event.pre ? ' (录制前)' : ''} ${event.text}`);

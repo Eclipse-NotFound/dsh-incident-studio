@@ -9,6 +9,7 @@ import { summarize, stats } from './harness.mjs';
 /** 每套测试的展示名与动态导入。 */
 const SUITES = [
 	['主机端全链路', './host.test.mjs'],
+	['输入记录', './input.test.mjs'],
 	['包清单与发布物件', './manifest.test.mjs'],
 	['客户端纯函数', './pure.test.mjs'],
 	['客户端 apply 集成', './client-apply.test.mjs'],

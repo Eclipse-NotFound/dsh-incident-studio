@@ -91,6 +91,7 @@ const routes = [
 	['GET', '/dsh-incident-studio/api/state'],
 	['POST', '/dsh-incident-studio/api/start'],
 	['GET', '/dsh-incident-studio/api/events?since=0'],
+	['GET', '/dsh-incident-studio/api/input?since=0'],
 	['GET', '/dsh-incident-studio/api/capture/sources'],
 	['GET', '/dsh-incident-studio/api/incidents'],
 	['GET', '/dsh-incident-studio/api/client-boot'],
@@ -147,6 +148,7 @@ if (entry !== null && wantFetch) {
 			if (!matches) problems += 1;
 			console.log(`  beacon 代码在包里：${result.text.includes('client-boot') ? '是' : '否'}`);
 			console.log(`  侧边栏注册在包里：${result.text.includes('sidebar.right.pane.tab') ? '是' : '否'}`);
+			console.log(`  输入记录 UI 在包里：${result.text.includes('/input?since=') ? '是' : '否'}`);
 		}
 	} catch (error) {
 		problems += 1;
@@ -170,6 +172,22 @@ try {
 } catch (error) {
 	problems += 1;
 	console.log(`  FAIL 还没有能力回执（${error.code ?? error.message}）`);
+}
+
+console.log(`\n== 宿主输入记录能力（input-capability.json）==`);
+try {
+	const capabilityPath = path.join(dshHome, 'storages', 'dsh-incident-studio', 'input-capability.json');
+	const capability = JSON.parse(await readFile(capabilityPath, 'utf8'));
+	console.log(`  ${capability.at}  platform=${capability.platform}  mode=${capability.mode}  available=${capability.available}`);
+	if (capability.available === true) {
+		console.log(`  OK   助手可用：${capability.keys} 键位，PowerShell ${capability.ps || '?'}，探测耗时 ${capability.elapsedMs}ms`);
+	} else {
+		problems += 1;
+		console.log(`  FAIL 输入助手不可用：${capability.reason || capability.error || '未知原因'}`);
+	}
+} catch (error) {
+	problems += 1;
+	console.log(`  FAIL 还没有输入能力回执（${error.code ?? error.message}）——宿主可能还没重载新版本`);
 }
 
 console.log(`\n== 浏览器端回执（client-boot.json）==`);

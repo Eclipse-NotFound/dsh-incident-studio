@@ -160,7 +160,7 @@ export async function run() {
 
 	const routes = [];
 	const ctx = createFakeContext(routes, workdir);
-	apply(ctx, {});
+	apply(ctx, { inputProbe: false });
 	ok(routes.length >= 10, `注册了足够多的路由（实际 ${routes.length}）`);
 	const { server, base } = await startServer(routes);
 
@@ -308,6 +308,32 @@ export async function run() {
 		ok(typeof bootDoc.stages.panel.at === 'string', 'client-boot 记下 panel 阶段时间');
 		equal(bootDoc.stages.panel.detail.sessionId, 's1', 'client-boot 保留阶段细节');
 		ok(Array.isArray(bootDoc.history) && bootDoc.history.length === 2, 'client-boot 保留阶段历史');
+
+		// ------------------------- 输入记录 -------------------------
+		const stateInput = await call(base, '/dsh-incident-studio/api/state');
+		equal(
+			stateInput.payload?.value?.input?.mode,
+			process.platform === 'win32' ? 'powershell' : 'none',
+			'state 报告输入记录模式',
+		);
+		equal(stateInput.payload?.value?.input?.defaults?.pollMs, 20, 'state 带输入默认采样间隔');
+		const inputList = await call(base, '/dsh-incident-studio/api/input?since=0');
+		equal(inputList.payload?.ok, true, '/input 路由可用');
+		lengthOf(inputList.payload?.value?.inputs, 0, '没配目标进程时不会记录输入');
+		contains(
+			String(inputList.payload?.value?.input?.reason ?? ''),
+			'目标进程',
+			'输入快照说明为什么没记（缺目标进程）',
+		);
+		const markerWithoutInput = await call(base, '/dsh-incident-studio/api/marker', { method: 'POST', body: { label: '无输入' } });
+		equal(markerWithoutInput.payload?.value?.anchor ?? null, null, '没有输入时打点不带锚点');
+		const bundleWithInput = await call(base, '/dsh-incident-studio/api/bundle', {
+			method: 'POST',
+			body: { title: '输入段检查', description: 'd', fromRel: 0, toRel: 1000, events: [] },
+		});
+		equal(bundleWithInput.payload?.ok, true, '带输入段的取证包写入成功');
+		contains(bundleWithInput.payload?.value?.markdown ?? '', '## 输入记录', '纪要里有输入段');
+		contains(bundleWithInput.payload?.value?.markdown ?? '', '没有记录键鼠输入', '没记输入时写明原因');
 	} finally {
 		await new Promise((resolve) => server.close(resolve));
 		ctx.disposeAll();

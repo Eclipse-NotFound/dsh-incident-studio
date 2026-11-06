@@ -79,7 +79,7 @@ await rm(scratchRoot, { recursive: true, force: true }).catch(() => {});
 
 const routes = [];
 const ctx = createFakeContext(routes, workdir);
-apply(ctx, {});
+apply(ctx, { inputProbe: false });
 const { server, base } = await startServer(routes);
 
 try {

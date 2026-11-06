@@ -26,7 +26,9 @@
 			const [startedAt, setStartedAt] = useState(0);
 			const [elapsed, setElapsed] = useState(0);
 			const [events, setEvents] = useState([]);
+			const [inputs, setInputs] = useState([]);
 			const [frames, setFrames] = useState([]);
+			const [showInputs, setShowInputs] = useState(false);
 			const [captureStatus, setCaptureStatus] = useState(null);
 			const [sourceChoices, setSourceChoices] = useState(null);
 			const [chosenSourceId, setChosenSourceId] = useState('');
@@ -186,6 +188,7 @@
 						profileId: activeProfile?.id ?? '',
 						sources,
 						sessionId: sessionIdRef.current ?? '',
+						input: activeProfile?.input ?? {},
 					});
 					if (!started.ok) {
 						setNotice({ level: 'err', text: started.message ?? t('err.generic') });
@@ -195,6 +198,8 @@
 					setStartedAt(Number(started.value.recording?.t0) || now);
 					setElapsed(0);
 					setEvents([]);
+					setInputs([]);
+					setShowInputs(false);
 					cursorRef.current = 0;
 					clearFrames();
 					setCaptureStatus(null);
@@ -260,6 +265,12 @@
 					}
 					const stopped = await API.stop();
 					if (stopped.ok) setRec(stopped.value.recording);
+					// 输入记录在停止时已经收尾归档，这里一次性取回，用于复看与递交摘要。
+					const inputResult = await API.input(0);
+					if (inputResult.ok) {
+						setInputs(Array.isArray(inputResult.value?.inputs) ? inputResult.value.inputs : []);
+						if (!stopped.ok) setRec((previous) => (previous === null ? previous : { ...previous, input: inputResult.value?.input ?? previous.input }));
+					}
 
 					const allFrames = framesRef.current.slice();
 					const allEvents = events;
@@ -297,7 +308,13 @@
 				if (result.ok && result.value?.event) {
 					setEvents((previous) => previous.concat([result.value.event]));
 					cursorRef.current = Math.max(cursorRef.current, result.value.cursor ?? cursorRef.current);
-					setNotice({ level: 'ok', text: `已打点：${formatRel(result.value.event.relMs)}` });
+					const anchor = describeAnchor(result.value.anchor ?? result.value.event.anchor);
+					setNotice({
+						level: 'ok',
+						text: anchor === ''
+							? `已打点：${formatRel(result.value.event.relMs)}`
+							: `已打点：${formatRel(result.value.event.relMs)}（${anchor}）`,
+					});
 				}
 			}
 
@@ -397,8 +414,7 @@
 							: (captureStatus?.mode === 'gdi'
 								? `GDI 抓屏 ${captureStatus?.fps ?? ''}fps`
 								: `桌面抓帧 ${captureStatus?.fps ?? ''}fps`),
-					});
-					if (!result.ok) {
+					});					if (!result.ok) {
 						setNotice({ level: 'err', text: result.message ?? t('err.generic') });
 						return;
 					}
@@ -414,6 +430,7 @@
 						annotations,
 						artifacts: current,
 						frameCount: inRange.length,
+						inputInfo: typeof result.value.inputInfo === 'string' ? result.value.inputInfo : '',
 					});
 					const files = [];
 					if (stripBlob !== undefined && stripBlob !== null) files.push(new File([stripBlob], 'frames.png', { type: 'image/png' }));
@@ -469,6 +486,7 @@
 				[events, fromRel, toRel, onlyProblems, query],
 			);
 			const inRangeFrames = useMemo(() => framesInRange(frames, fromRel, toRel, t0), [frames, fromRel, toRel, t0]);
+			const inRangeInputs = useMemo(() => filterInputs(inputs, fromRel, toRel), [inputs, fromRel, toRel]);
 			const recordingFrames = frames;
 			const previewIndex = nearestFrameIndex(inRangeFrames, playhead, t0);
 			const previewFrame = previewIndex >= 0 ? inRangeFrames[previewIndex] : (inRangeFrames[inRangeFrames.length - 1] ?? null);
@@ -504,6 +522,7 @@
 						ingestToken: boot?.state?.ingestToken,
 						onProbe: probe,
 						probeState,
+						inputCapability: boot?.state?.input ?? null,
 					}),
 				)
 				: null;
@@ -558,6 +577,28 @@
 								? h('span', { className: 'dshis-muted' }, t('idle.noSource'))
 								: null,
 						),
+					),
+					h(
+						'div',
+						{ className: 'dshis-row dshis-wrap' },
+						h('span', { className: 'dshis-muted' }, t('rec.input')),
+						typeof boot?.state?.input?.probedAt !== 'string' || boot.state.input.probedAt === ''
+							? h('span', { className: 'dshis-muted' }, t('rec.input.arming'))
+							: boot?.state?.input?.available !== true
+								? h(
+									'span',
+									{ className: 'dshis-badge' },
+									t('settings.input.unavailable', { reason: boot?.state?.input?.reason || '—' }),
+								)
+								: activeProfile?.input?.enabled === false
+									? h('span', { className: 'dshis-badge' }, t('rec.input.off'))
+									: (activeProfile?.input?.targets ?? '') === ''
+										? h('span', { className: 'dshis-badge', style: { color: '#9a6700' } }, t('settings.input.noTarget'))
+										: h(
+											'span',
+											{ className: 'dshis-badge' },
+											`${activeProfile.input.targets}${activeProfile.input.scope === 'all' ? ' · all' : ''}`,
+										),
 					),
 					h(
 						'div',
@@ -652,6 +693,7 @@
 						captureStatus?.mode === 'gdi' ? h('span', { className: 'dshis-badge' }, 'GDI') : null,
 						h('span', null, captureStatus?.error ? `! ${captureStatus.error}` : `${captureStatus?.captured ?? 0} ${t('rec.frames')}`),
 					),
+					h(InputHud, { input: rec?.input }),
 					h(
 						'div',
 						{ className: 'dshis-wrap' },
@@ -809,6 +851,24 @@
 						}),
 					),
 					h(EventList, { events: filteredEvents, activeRel: playhead, onSeek: (rel) => { setPlayhead(rel); setPlaying(false); } }),
+					h(
+						'div',
+						{ className: 'dshis-col' },
+						h(
+							'div',
+							{ className: 'dshis-row dshis-wrap' },
+							h('span', { className: 'dshis-muted' }, `${t('review.input')} · ${inRangeInputs.length}`),
+							inRangeInputs.length > 0 ? h('span', { className: 'dshis-badge' }, inputSummaryText(inRangeInputs)) : null,
+							h('span', { className: 'dshis-grow' }),
+							showInputs
+								? h(Btn, { small: true, onClick: () => setShowInputs(false) }, t('review.input.hide'))
+								: h(Btn, { small: true, onClick: () => setShowInputs(true) }, t('review.input.show')),
+						),
+						rec?.input?.reason ? h('div', { className: 'dshis-muted' }, `${t('rec.input')}：${rec.input.reason}`) : null,
+						showInputs
+							? h(InputList, { inputs: inRangeInputs, onSeek: (rel) => { setPlayhead(rel); setPlaying(false); } })
+							: null,
+					),
 					h('div', { className: 'dshis-sep' }),
 					h(
 						'div',

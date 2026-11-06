@@ -28,14 +28,26 @@
 		 * 设置面板：管理 profile 与其中的日志源。
 		 */
 		function SettingsPanel(props) {
-			const { doc, setDoc, onSave, saving, ingestToken, onProbe, probeState } = props;
+			const { doc, setDoc, onSave, saving, ingestToken, onProbe, probeState, inputCapability } = props;
 			const profiles = Array.isArray(doc?.profiles) ? doc.profiles : [];
 			const activeIndex = Math.max(0, profiles.findIndex((profile) => profile.id === doc?.activeId));
 			const active = profiles[activeIndex];
+			// 采样间隔下拉：只给两个实测有意义的档，配置里写了别的值也要能显示出来
+			const pollChoices = [[10, '10ms（约 60 Hz）'], [20, '20ms（约 30 Hz）']];
+			const currentPoll = Number(active?.input?.pollMs ?? 20);
+			if (!pollChoices.some(([ms]) => ms === currentPoll)) pollChoices.push([currentPoll, `${currentPoll}ms`]);
 
 			const patchProfile = (index, patch) => {
 				const next = cloneDocument(doc);
 				next.profiles[index] = { ...next.profiles[index], ...patch };
+				setDoc(next);
+			};
+
+			/** 改当前 profile 的输入记录设置（缺字段时补一个空对象）。 */
+			const patchInput = (index, patch) => {
+				const next = cloneDocument(doc);
+				const target = next.profiles[index];
+				target.input = { ...(target.input ?? {}), ...patch };
 				setDoc(next);
 			};
 
@@ -180,6 +192,82 @@
 							),
 						),
 						h(Btn, { small: true, onClick: () => addSource(activeIndex) }, t('btn.add.source')),
+						h('div', { className: 'dshis-muted' }, t('settings.input')),
+						active.input === undefined || active.input === null
+							? null
+							: h(
+								'div',
+								{ className: 'dshis-card' },
+								h(
+									'label',
+									{ className: 'dshis-muted dshis-row', style: { gap: '4px' } },
+									h('input', {
+										type: 'checkbox',
+										checked: active.input.enabled !== false,
+										onChange: (event) => patchInput(activeIndex, { enabled: event.target.checked }),
+									}),
+									t('settings.input.enable'),
+								),
+								h('input', {
+									className: 'dshis-input',
+									value: active.input.targets ?? '',
+									placeholder: t('settings.input.process'),
+									onChange: (event) => patchInput(activeIndex, { targets: event.target.value }),
+								}),
+								h('div', { className: 'dshis-muted' }, t('settings.input.process.hint')),
+								h(
+									'div',
+									{ className: 'dshis-row' },
+									h('span', { className: 'dshis-muted' }, t('settings.input.scope')),
+									h(
+										'select',
+										{
+											className: 'dshis-select dshis-grow',
+											value: active.input.scope === 'all' ? 'all' : 'target',
+											onChange: (event) => patchInput(activeIndex, { scope: event.target.value }),
+										},
+										h('option', { value: 'target' }, t('settings.input.scope.target')),
+										h('option', { value: 'all' }, t('settings.input.scope.all')),
+									),
+								),
+								h(
+									'div',
+									{ className: 'dshis-row dshis-wrap' },
+									h(
+										'label',
+										{ className: 'dshis-muted dshis-row', style: { gap: '4px' } },
+										h('input', {
+											type: 'checkbox',
+											checked: Number(active.input.trailHz) > 0,
+											onChange: (event) => patchInput(activeIndex, { trailHz: event.target.checked ? 8 : 0 }),
+										}),
+										t('settings.input.trail'),
+									),
+									h('span', { className: 'dshis-muted' }, t('settings.input.poll')),
+									h(
+										'select',
+										{
+											className: 'dshis-select',
+											style: { width: '86px' },
+											value: String(active.input.pollMs ?? 20),
+											onChange: (event) => patchInput(activeIndex, { pollMs: Number(event.target.value) }),
+										},
+										pollChoices.map(([ms, label]) =>
+											h('option', { key: ms, value: String(ms) }, label),
+										),
+									),
+								),
+								h('div', { className: 'dshis-muted' }, t('settings.input.privacy')),
+								inputCapability === null || inputCapability === undefined
+									? null
+									: inputCapability.available === true
+										? h('div', { className: 'dshis-muted' }, `✓ ${t('settings.input.ready', { keys: inputCapability.keys ?? 0 })}`)
+										: h(
+											'div',
+											{ className: 'dshis-muted', style: { color: '#9a6700' } },
+											t('settings.input.unavailable', { reason: inputCapability.reason || '—' }),
+										),
+							),
 					),
 				h('div', { className: 'dshis-sep' }),
 				h('div', { className: 'dshis-muted' }, t('settings.ingest')),

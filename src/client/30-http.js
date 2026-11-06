@@ -51,6 +51,7 @@
 			start: (payload) => api('/start', { method: 'POST', body: payload }),
 			stop: () => api('/stop', { method: 'POST', body: {} }),
 			events: (since) => api(`/events?since=${encodeURIComponent(String(since))}`),
+			input: (since) => api(`/input?since=${encodeURIComponent(String(since))}`),
 			marker: (label) => api('/marker', { method: 'POST', body: { label } }),
 			artifact: (name, data) => api('/artifact', { method: 'POST', body: { name, data } }),
 			bundle: (payload) => api('/bundle', { method: 'POST', body: payload }),
